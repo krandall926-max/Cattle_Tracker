@@ -43,7 +43,6 @@ export default function AnimalForm() {
   const [loaded, setLoaded] = useState(!editing)
 
   const animals = useLiveQuery(() => db.animals.toArray(), [], [] as Animal[])
-  const pastures = useLiveQuery(() => db.pastures.toArray(), [], [])
   const cows = animals.filter((a) => !a.deleted && (a.type === 'cow' || a.type === 'heifer'))
   const bulls = animals.filter((a) => !a.deleted && a.type === 'bull')
 
@@ -212,18 +211,6 @@ export default function AnimalForm() {
             </div>
           </div>
         )}
-
-        <div>
-          <label className="field-label">Pasture</label>
-          <select className="field-input" value={form.pastureId} onChange={(e) => set('pastureId', e.target.value)}>
-            <option value="">— unassigned —</option>
-            {pastures
-              .filter((p) => !p.deleted)
-              .map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-          </select>
-        </div>
 
         <div>
           <label className="field-label">Notes</label>

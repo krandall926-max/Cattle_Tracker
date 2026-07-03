@@ -22,16 +22,18 @@ export function Layout({ children }: { children: ReactNode }) {
   const online = useOnlineStatus()
   return (
     <div className="mx-auto flex min-h-full max-w-2xl flex-col">
-      <header className="sticky top-0 z-10 flex items-center gap-3 bg-cobalt-600 px-4 py-3 text-white shadow-md">
-        <BrandMark className="h-9 w-9" />
-        <div className="leading-tight">
-          <div className="text-base font-bold tracking-wide">SAND CREEK</div>
-          <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-cobalt-100">
-            Cattle
+      <header className="sticky top-0 z-10 flex items-center gap-3 border-b-4 border-leather-600 bg-cobalt-600 px-4 py-3 text-white shadow-md">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-inner ring-1 ring-black/10">
+          <BrandMark className="h-9 w-9" />
+        </div>
+        <div className="leading-none">
+          <div className="font-display text-lg font-bold tracking-wide">SAND CREEK</div>
+          <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.35em] text-cobalt-100">
+            Cattle Co.
           </div>
         </div>
         <span
-          className={`ml-auto chip ${online ? 'bg-cobalt-500 text-white' : 'bg-amber-400 text-slate-900'}`}
+          className={`ml-auto chip ${online ? 'bg-cobalt-700 text-white' : 'bg-amber-400 text-slate-900'}`}
           title={online ? 'Online — changes are saved on this device' : 'Offline — still fully working; changes save on this device'}
         >
           <span className={`h-2 w-2 rounded-full ${online ? 'bg-emerald-300' : 'bg-slate-900'}`} />

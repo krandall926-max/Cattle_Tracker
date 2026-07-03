@@ -13,10 +13,18 @@ body,
 }
 
 body {
-  @apply bg-sand-50 text-slate-900 antialiased;
+  @apply bg-sand-50 bg-hatch text-slate-900 antialiased;
   /* Respect phone notches / home indicators. */
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
     env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* Headings carry the slab-serif ranch character. */
+h1,
+h2,
+.font-display {
+  font-family: theme('fontFamily.display');
+  letter-spacing: -0.01em;
 }
 
 @layer components {

@@ -70,8 +70,13 @@ export default function AnimalDetail() {
             value={animal.birthDate ? `${ageFrom(animal.birthDate)} (${formatDate(animal.birthDate)})` : '—'}
           />
           {animal.purchaseDate && <Detail label="Purchased" value={formatDate(animal.purchaseDate)} />}
-          <Detail label="Pasture" value={pasture?.name ?? 'Unassigned'} />
-          {animal.registryCode && <Detail label="Registry" value={animal.registryCode} />}
+          {pasture && <Detail label="Pasture" value={pasture.name} />}
+          {animal.registryCode && (
+            <Detail
+              label="Marking"
+              value={`${animal.registryCode}${animal.registryCode === 'Val' ? ' · baldy' : animal.registryCode === 'Gen' ? ' · solid' : ''}`}
+            />
+          )}
         </dl>
 
         {(dam || sire) && (

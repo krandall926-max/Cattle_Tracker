@@ -3,8 +3,9 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { StatCard, SectionTitle } from '../components/ui'
 import { BellIcon, ChevronRight, PlusIcon } from '../components/Icons'
+import { BrandMark } from '../components/Brand'
 import { calvingWindow } from '../lib/breeding'
-import { daysUntil, relativeDays, todayISO } from '../lib/dates'
+import { daysUntil, formatDate, relativeDays, todayISO } from '../lib/dates'
 import type { Animal, BreedingRecord, Task } from '../types'
 
 export default function Dashboard() {
@@ -39,11 +40,10 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">{farmName ?? 'Sand Creek Cattle'}</h1>
-          <p className="text-sm text-slate-500">Herd overview · {todayISO()}</p>
-        </div>
+      <div className="relative overflow-hidden rounded-2xl border-b-4 border-leather-600 bg-gradient-to-br from-cobalt-600 to-cobalt-800 px-5 py-4 text-white shadow-sm">
+        <BrandMark className="pointer-events-none absolute -right-3 -top-3 h-28 w-28 opacity-10" />
+        <h1 className="font-display text-2xl font-bold">{farmName ?? 'Sand Creek Cattle'}</h1>
+        <p className="text-sm text-cobalt-100">Herd overview · {formatDate(todayISO())}</p>
       </div>
 
       {attention > 0 ? (

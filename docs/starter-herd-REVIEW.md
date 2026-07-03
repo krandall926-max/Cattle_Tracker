@@ -23,12 +23,21 @@ These need a human pass:
 - **Milk cows** — only **489** is marked (annotated "Brown Swiss" on the sheet).
   If there's a second "striped" milk cow, set its breed too.
 
+## Tag formats
+
+Tags vary in format on purpose (e.g. `K16`, `48W`, `KL2`, `217`) and are kept
+**exactly as written** — no auto-correcting. Two rules that help resolve
+hard-to-read characters: there is **no letter `O`** (a round mark is a zero), and
+letters are **almost always `K` or `W`**. So when the `verify` notes below waver
+between a letter and something else, lean toward `K`/`W` and read `O` as `0`.
+
 ## The `Gen` / `Val` marker
 
-Each tag had a `Gen` or `Val` written next to it. Per instructions this is **not**
-part of the tag number, so it's stored in a separate hidden `registry` field
-(kept, not shown prominently). Tell me what `Gen`/`Val` actually means and I'll
-surface it properly (or drop it).
+Each tag had a `Gen` or `Val` written next to it. This is **not** part of the tag
+number, so it's stored in a separate `registry` field and shown on the animal's
+page as its "Marking." Per the owner: **`Val` = baldy (white-faced)** and
+**`Gen` = solid color**. The exact reason for the abbreviations is still being
+researched — once confirmed we can relabel it precisely.
 
 ## Tags flagged `verify` in the notes column
 

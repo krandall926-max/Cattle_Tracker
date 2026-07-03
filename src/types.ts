@@ -12,7 +12,11 @@ export type Sex = 'F' | 'M'
 
 export type AnimalStatus = 'active' | 'sold' | 'deceased' | 'cull'
 
-/** The "Gen" / "Val" marker written next to some tags. Meaning TBD by owner. */
+/**
+ * The "Gen" / "Val" marker written next to some tags. Per the owner it tracks
+ * coat pattern — Val = baldy (white-faced), Gen = solid color — though the exact
+ * meaning of the abbreviations is still being confirmed.
+ */
 export type RegistryCode = '' | 'Gen' | 'Val'
 
 export interface Animal {

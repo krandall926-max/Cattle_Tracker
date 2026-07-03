@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { AnimalStatus, AnimalType } from '../types'
 import { STATUS_LABELS, TYPE_LABELS } from '../constants'
+import { BrandMark } from './Brand'
 
 // Shared presentational bits used across screens.
 
@@ -15,7 +16,7 @@ export function StatCard({
 }) {
   return (
     <div className={`card p-4 ${tone === 'cobalt' ? 'bg-cobalt-600 text-white ring-cobalt-700' : ''}`}>
-      <div className={`text-3xl font-bold ${tone === 'cobalt' ? 'text-white' : 'text-slate-900'}`}>{value}</div>
+      <div className={`font-display text-3xl font-bold ${tone === 'cobalt' ? 'text-white' : 'text-slate-900'}`}>{value}</div>
       <div className={`mt-0.5 text-sm ${tone === 'cobalt' ? 'text-cobalt-100' : 'text-slate-500'}`}>{label}</div>
     </div>
   )
@@ -48,6 +49,7 @@ export function StatusChip({ status }: { status: AnimalStatus }) {
 export function EmptyState({ title, hint }: { title: string; hint?: string }) {
   return (
     <div className="card p-8 text-center text-slate-500">
+      <BrandMark className="mx-auto mb-3 h-12 w-12 opacity-30 grayscale" />
       <p className="font-medium text-slate-600">{title}</p>
       {hint && <p className="mt-1 text-sm">{hint}</p>}
     </div>
@@ -57,7 +59,10 @@ export function EmptyState({ title, hint }: { title: string; hint?: string }) {
 export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
     <div className="mb-2 mt-6 flex items-center justify-between">
-      <h2 className="text-lg font-bold text-slate-800">{children}</h2>
+      <h2 className="flex items-center gap-2 text-lg font-bold text-slate-800">
+        <span className="h-5 w-1.5 rounded-full bg-leather-600" />
+        {children}
+      </h2>
       {action}
     </div>
   )

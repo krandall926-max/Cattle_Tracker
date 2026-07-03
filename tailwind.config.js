@@ -18,13 +18,29 @@ export default {
           900: '#182573',
         },
         sand: {
-          50: '#faf8f3',
-          100: '#f3eee1',
+          50: '#faf7f0',
+          100: '#f3ecdd',
           200: '#e7dcc4',
+          300: '#d8c39c',
+        },
+        // Warm leather/rust accent for rancher character alongside the cobalt.
+        leather: {
+          50: '#fbf3ee',
+          100: '#f3e0d3',
+          400: '#c08457',
+          600: '#9a5a30',
+          700: '#7c4726',
+          800: '#5f3720',
         },
       },
       fontFamily: {
         sans: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['"Zilla Slab"', 'Georgia', 'serif'],
+      },
+      backgroundImage: {
+        // Faint cross-hatch so the cream background reads like paper/canvas.
+        hatch:
+          'repeating-linear-gradient(45deg, rgba(154,90,48,0.04) 0 2px, transparent 2px 9px)',
       },
     },
   },
