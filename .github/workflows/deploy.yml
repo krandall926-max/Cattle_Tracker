@@ -1,0 +1,48 @@
+name: Deploy to GitHub Pages
+
+# Builds the app and publishes it to GitHub Pages so there's a real, shareable
+# link. Runs on pushes to the default branch and this development branch, and
+# can be triggered by hand from the Actions tab.
+on:
+  push:
+    branches:
+      - main
+      - claude/cattle-management-offline-app-ki5m5r
+  workflow_dispatch:
+
+# One-time setup in the repo: Settings → Pages → Build and deployment →
+# Source: "GitHub Actions". After that this workflow publishes automatically.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two deploys at once; let the newest win.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
