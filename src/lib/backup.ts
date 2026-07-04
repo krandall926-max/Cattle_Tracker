@@ -1,5 +1,11 @@
 import { db } from '../db/db'
-import { saveAnimal, saveBreeding } from '../db/repo'
+import {
+  saveAnimal,
+  saveBreeding,
+  softDeleteAnimal,
+  softDeleteBreeding,
+  softDeleteTreatment,
+} from '../db/repo'
 import { newId } from './id'
 import { todayISO } from './dates'
 import { projectedCalving } from './breeding'
@@ -250,6 +256,24 @@ export async function importStarterHerdCsv(text: string): Promise<CsvImportResul
   }
 
   return { added, skipped, total: rows.length - 1, breedings }
+}
+
+/**
+ * Remove all demo/test records — any animal whose name contains "test"
+ * (case-insensitive), plus that animal's breedings and treatments. Soft-delete,
+ * so it's still recoverable from a backup if needed.
+ */
+export async function removeTestData(): Promise<number> {
+  const animals = (await db.animals.toArray()).filter((a) => !a.deleted)
+  const testIds = new Set(
+    animals.filter((a) => (a.name ?? '').toLowerCase().includes('test')).map((a) => a.id),
+  )
+  const breedings = (await db.breedings.toArray()).filter((b) => !b.deleted && testIds.has(b.cowId))
+  const treatments = (await db.treatments.toArray()).filter((t) => !t.deleted && testIds.has(t.animalId))
+  for (const b of breedings) await softDeleteBreeding(b.id)
+  for (const t of treatments) await softDeleteTreatment(t.id)
+  for (const id of testIds) await softDeleteAnimal(id)
+  return testIds.size
 }
 
 /** Minimal CSV parser that handles quoted fields and commas within quotes. */

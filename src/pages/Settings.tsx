@@ -7,6 +7,7 @@ import {
   exportBackup,
   importBackup,
   importStarterHerdCsv,
+  removeTestData,
 } from '../lib/backup'
 import { formatDate } from '../lib/dates'
 import type { Animal } from '../types'
@@ -50,6 +51,31 @@ export default function Settings() {
       flash(`Starter herd: added ${result.added}, skipped ${result.skipped} already present.`)
     } catch (err) {
       flash(err instanceof Error ? err.message : 'Import failed.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function onLoadSample() {
+    setBusy(true)
+    try {
+      const res = await fetch(import.meta.env.BASE_URL + 'test-herd.csv')
+      if (!res.ok) throw new Error('test-herd.csv not found')
+      const result = await importStarterHerdCsv(await res.text())
+      flash(`Sample record loaded — ${result.added} test animals (cow 10-1 + calves).`)
+    } catch (err) {
+      flash(err instanceof Error ? err.message : 'Load failed.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function onRemoveTest() {
+    if (!confirm('Remove all test/demo records (anything named “TEST”)?')) return
+    setBusy(true)
+    try {
+      const n = await removeTestData()
+      flash(`Removed ${n} test records.`)
     } finally {
       setBusy(false)
     }
@@ -106,6 +132,19 @@ export default function Settings() {
         <button onClick={onLoadStarter} disabled={busy} className="btn-ghost">
           Load starter herd from CSV
         </button>
+      </div>
+
+      <SectionTitle>Demo / sample data</SectionTitle>
+      <div className="card space-y-3 p-4">
+        <p className="text-sm text-taupe-600">
+          Loads a real sample cow record (cow <strong>10-1</strong> and all her calves, from the old
+          Individual Beef Cow Record) so you can show a working example. Every record is named
+          <strong> “TEST”</strong> — tap <em>Remove test data</em> to wipe them all in one go.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={onLoadSample} disabled={busy} className="btn-primary">Load sample record</button>
+          <button onClick={onRemoveTest} disabled={busy} className="btn-danger">Remove test data</button>
+        </div>
       </div>
 
       <SectionTitle>About sync</SectionTitle>

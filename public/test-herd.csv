@@ -1,0 +1,14 @@
+tag,name,type,breed,color,sex,status,birth date,dam tag,sire tag,birth wt,weaning wt,adj weaning wt,daily gain,herd index,quality score,notes
+10-1,TEST,cow,Angus,Black,F,active,1995-01-01,,,,,,,,,TEST sample — Individual Beef Cow Record (yellow tag)
+97S,TEST,steer,Angus,Black,M,active,1997-01-01,10-1,NS,,544,,,,15,TEST · calf 1 (10.1)
+98H,TEST,heifer,Angus,Black,F,active,1998-02-18,10-1,Mainstream,73,500,664,,110,10.5,TEST · calf 2 (10.2) · Cow No. 139-1
+99S,TEST,steer,Angus,Black,M,active,1999-04-18,10-1,NS,75,444,648,2.67,110,15.5,TEST · calf 3 (10.3)
+00H,TEST,heifer,Angus,Black,F,active,2000-03-22,10-1,Powder Boat,80,445,616,2.27,100,15,TEST · calf 4 (10.4)
+01H,TEST,heifer,Angus,Black,F,active,2001-03-13,10-1,NS,77,574,730,2.79,112,16,TEST · calf 5 · Choice/HRI
+02H,TEST,heifer,Angus,Black,F,active,2002-02-27,10-1,NS,74,490,660,2.49,107,15.5,TEST · calf 6 · Choice/HRI
+03B,TEST,bull,Angus,Black,M,active,2003-02-12,10-1,Bloomer,86,630,661,2.80,114,16,TEST · calf 7 · sold W. Janssen $2400
+04H,TEST,heifer,Angus,Black,F,active,2004-01-24,10-1,Sandhills,67,630,629,2.61,107,16,TEST · calf 8 · Cow No. 421
+05B,TEST,bull,Angus,Black,M,active,2005-02-10,10-1,H6,71,605,624,2.70,106,15.5,TEST · calf 9 · sold $1900 Don Harwood
+06B,TEST,bull,Angus,Black,M,active,2006-02-21,10-1,Alliance,78,475,585,2.35,105,15.5,TEST · calf 10
+07H,TEST,heifer,Angus,Black,F,active,2007-02-27,10-1,Leddon,74,432,493,1.95,95,15.5,TEST · calf 11
+08S,TEST,steer,Angus,Black,M,active,2008-03-23,10-1,NS,75,472,636,2.61,125,15,TEST · calf 12
