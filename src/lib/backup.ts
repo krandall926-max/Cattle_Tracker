@@ -276,6 +276,22 @@ export async function removeTestData(): Promise<number> {
   return testIds.size
 }
 
+/**
+ * Wipe all herd data on this device (animals, breedings, tasks, treatments) for
+ * a clean slate — e.g. before loading only the sample record. Pastures and
+ * settings are kept. This is a hard delete; export a backup first if unsure.
+ */
+export async function clearHerdData(): Promise<void> {
+  await db.transaction('rw', [db.animals, db.breedings, db.tasks, db.treatments], async () => {
+    await Promise.all([
+      db.animals.clear(),
+      db.breedings.clear(),
+      db.tasks.clear(),
+      db.treatments.clear(),
+    ])
+  })
+}
+
 /** Minimal CSV parser that handles quoted fields and commas within quotes. */
 export function parseCsv(text: string): string[][] {
   const rows: string[][] = []

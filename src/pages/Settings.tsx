@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { SectionTitle } from '../components/ui'
 import {
+  clearHerdData,
   downloadBackup,
   exportBackup,
   importBackup,
@@ -81,6 +82,18 @@ export default function Settings() {
     }
   }
 
+  async function onClearAll() {
+    if (!confirm('Delete ALL animals and records on THIS device? Pastures are kept. Export a backup first if unsure.')) return
+    if (!confirm('Are you sure? This cannot be undone (except from a backup file).')) return
+    setBusy(true)
+    try {
+      await clearHerdData()
+      flash('All herd data cleared. You can now load only the sample record.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   function flash(m: string) {
     setMsg(m)
     setTimeout(() => setMsg((cur) => (cur === m ? null : cur)), 6000)
@@ -137,13 +150,19 @@ export default function Settings() {
       <SectionTitle>Demo / sample data</SectionTitle>
       <div className="card space-y-3 p-4">
         <p className="text-sm text-taupe-600">
-          Loads a real sample cow record (cow <strong>10-1</strong> and all her calves, from the old
-          Individual Beef Cow Record) so you can show a working example. Every record is named
-          <strong> “TEST”</strong> — tap <em>Remove test data</em> to wipe them all in one go.
+          <strong>Load sample record</strong> adds one cow — <strong>10-1</strong> — and her 12 calves
+          (from the old Individual Beef Cow Record). It only adds those 13; it does <em>not</em> touch
+          any other animals already on the device.
+        </p>
+        <p className="text-sm text-taupe-600">
+          For a <strong>clean demo of just 10-1</strong>: tap <em>Clear all herd data</em> first, then
+          <em> Load sample record</em>. Every sample record is named <strong>“TEST”</strong>, so
+          <em> Remove test data</em> wipes only those.
         </p>
         <div className="flex flex-wrap gap-2">
           <button onClick={onLoadSample} disabled={busy} className="btn-primary">Load sample record</button>
-          <button onClick={onRemoveTest} disabled={busy} className="btn-danger">Remove test data</button>
+          <button onClick={onRemoveTest} disabled={busy} className="btn-ghost">Remove test data</button>
+          <button onClick={onClearAll} disabled={busy} className="btn-danger">Clear all herd data</button>
         </div>
       </div>
 
