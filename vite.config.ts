@@ -13,7 +13,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
+      includeAssets: ['favicon.png', 'brand.png', 'icons/apple-touch-icon.png'],
       manifest: {
         name: 'Sand Creek Cattle',
         short_name: 'Sand Creek',

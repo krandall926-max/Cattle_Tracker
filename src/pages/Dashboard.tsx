@@ -46,7 +46,7 @@ export default function Dashboard() {
     <div>
       {/* Ranch header — neutral charcoal band, cobalt stays an accent */}
       <div className="relative overflow-hidden rounded-2xl bg-navy-900 px-5 py-5 text-white">
-        <BrandMark className="pointer-events-none absolute -right-4 -top-4 h-28 w-28 opacity-10" />
+        <BrandMark className="pointer-events-none absolute -right-4 -top-4 h-28 w-28 opacity-10 brightness-0 invert" />
         <div className="text-sm text-taupe-200/90">Herd overview · {formatDate(todayString())}</div>
         <h1 className="mt-0.5 font-display text-2xl font-bold">{farmName ?? 'Sand Creek Cattle'}</h1>
       </div>
