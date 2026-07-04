@@ -5,7 +5,7 @@ import {
   HomeIcon,
   HerdIcon,
   BreedingIcon,
-  PastureIcon,
+  CalendarIcon,
   SettingsIcon,
 } from './Icons'
 import { useOnlineStatus } from '../hooks/useOnlineStatus'
@@ -14,7 +14,7 @@ const NAV = [
   { to: '/', label: 'Home', Icon: HomeIcon, end: true },
   { to: '/herd', label: 'Herd', Icon: HerdIcon, end: false },
   { to: '/breeding', label: 'Breeding', Icon: BreedingIcon, end: false },
-  { to: '/pastures', label: 'Pastures', Icon: PastureIcon, end: false },
+  { to: '/schedule', label: 'Schedule', Icon: CalendarIcon, end: false },
   { to: '/settings', label: 'More', Icon: SettingsIcon, end: false },
 ]
 

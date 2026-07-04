@@ -4,12 +4,16 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { saveAnimal, softDeleteAnimal } from '../db/repo'
 import { BackIcon } from '../components/Icons'
-import { BREED_LABELS, TYPE_LABELS, STATUS_LABELS } from '../constants'
+import {
+  BREED_SUGGESTIONS,
+  COLOR_SUGGESTIONS,
+  TYPE_LABELS,
+  STATUS_LABELS,
+} from '../constants'
 import type {
   Animal,
   AnimalStatus,
   AnimalType,
-  Breed,
   RegistryCode,
   Sex,
 } from '../types'
@@ -18,7 +22,8 @@ const BLANK = {
   tag: '',
   name: '',
   type: 'cow' as AnimalType,
-  breed: 'black_angus' as Breed,
+  breed: 'Angus',
+  color: '',
   sex: 'F' as Sex,
   status: 'active' as AnimalStatus,
   birthDate: '',
@@ -55,6 +60,7 @@ export default function AnimalForm() {
           name: a.name ?? '',
           type: a.type,
           breed: a.breed,
+          color: a.color ?? '',
           sex: a.sex,
           status: a.status,
           birthDate: a.birthDate ?? '',
@@ -82,7 +88,8 @@ export default function AnimalForm() {
       tag: form.tag.trim(),
       name: form.name.trim() || undefined,
       type: form.type,
-      breed: form.breed,
+      breed: form.breed.trim() || 'Angus',
+      color: form.color.trim() || undefined,
       sex: form.sex,
       status: form.status,
       birthDate: form.birthDate || undefined,
@@ -151,11 +158,33 @@ export default function AnimalForm() {
           </div>
           <div>
             <label className="field-label">Breed</label>
-            <select className="field-input" value={form.breed} onChange={(e) => set('breed', e.target.value as Breed)}>
-              {Object.entries(BREED_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>{v}</option>
+            <input
+              className="field-input"
+              list="breed-options"
+              value={form.breed}
+              onChange={(e) => set('breed', e.target.value)}
+              placeholder="Angus"
+            />
+            <datalist id="breed-options">
+              {BREED_SUGGESTIONS.map((b) => (
+                <option key={b} value={b} />
               ))}
-            </select>
+            </datalist>
+          </div>
+          <div>
+            <label className="field-label">Color</label>
+            <input
+              className="field-input"
+              list="color-options"
+              value={form.color}
+              onChange={(e) => set('color', e.target.value)}
+              placeholder="Black"
+            />
+            <datalist id="color-options">
+              {COLOR_SUGGESTIONS.map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
           </div>
 
           <div>

@@ -66,3 +66,15 @@ export const BackIcon = ({ className = base }: P) => (
     <path d="M15 6l-6 6 6 6" />
   </svg>
 )
+
+export const CalendarIcon = ({ className = base }: P) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4.5" width="18" height="16" rx="2.5" /><path d="M3 9h18M8 3v3M16 3v3" />
+  </svg>
+)
+
+export const CheckIcon = ({ className = base }: P) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+)

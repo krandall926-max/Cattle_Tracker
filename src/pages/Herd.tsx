@@ -5,7 +5,6 @@ import { db } from '../db/db'
 import { EmptyState, StatusChip, StatusDot, TypeChip } from '../components/ui'
 import { EarTag } from '../components/EarTag'
 import { SearchIcon, PlusIcon, ChevronRight } from '../components/Icons'
-import { BREED_LABELS } from '../constants'
 import { ageFrom, formatDate } from '../lib/dates'
 import type { Animal, AnimalType } from '../types'
 
@@ -128,7 +127,7 @@ function AnimalRow({ animal }: { animal: Animal }) {
         </div>
         <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-taupe-600">
           <TypeChip type={animal.type} />
-          <span>{BREED_LABELS[animal.breed]}</span>
+          <span>{animal.color ? `${animal.color} ${animal.breed}` : animal.breed}</span>
           {born && <span className="truncate">· {born}</span>}
         </div>
       </div>

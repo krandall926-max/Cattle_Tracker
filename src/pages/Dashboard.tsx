@@ -6,7 +6,7 @@ import {
   BellIcon,
   ChevronRight,
   PlusIcon,
-  HerdIcon,
+  CalendarIcon,
   BreedingIcon,
   PastureIcon,
 } from '../components/Icons'
@@ -92,7 +92,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 gap-3">
         <QuickTile to="/herd/new" label="Add animal" hint="New cow, calf or bull" Icon={PlusIcon} tone="cobalt" />
         <QuickTile to="/breeding/new" label="Log breeding" hint="AI or bull turnout" Icon={BreedingIcon} tone="emerald" />
-        <QuickTile to="/herd" label="The herd" hint="Search & records" Icon={HerdIcon} tone="ink" />
+        <QuickTile to="/schedule" label="Schedule" hint="AI dates & reminders" Icon={CalendarIcon} tone="ink" />
         <QuickTile to="/pastures" label="Pastures" hint="From the ranch map" Icon={PastureIcon} tone="leather" />
       </div>
 
@@ -196,7 +196,15 @@ function UpcomingTasks({ tasks }: { tasks: Task[] }) {
   if (soon.length === 0) return null
   return (
     <>
-      <SectionTitle>Upcoming tasks</SectionTitle>
+      <SectionTitle
+        action={
+          <Link to="/schedule" className="text-sm font-semibold text-cobalt-600">
+            Manage
+          </Link>
+        }
+      >
+        Upcoming tasks
+      </SectionTitle>
       <div className="card divide-y divide-taupe-100">
         {soon.map((t) => {
           const overdue = daysUntil(t.dueDate) < 0

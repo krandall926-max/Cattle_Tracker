@@ -4,9 +4,16 @@
 // ever hard-deleted locally so that a future cloud-sync layer can merge edits
 // from multiple devices (last-write-wins per record) without losing history.
 
-export type AnimalType = 'cow' | 'bull' | 'calf' | 'heifer' | 'steer'
-
-export type Breed = 'black_angus' | 'red_angus' | 'milk_cow'
+export type AnimalType =
+  | 'cow'
+  | 'bull'
+  | 'calf'
+  | 'heifer'
+  | 'steer'
+  | 'show' // Show Steer/Heifer
+  | 'horse'
+  | 'pig'
+  | 'donkey'
 
 export type Sex = 'F' | 'M'
 
@@ -24,7 +31,10 @@ export interface Animal {
   tag: string
   name?: string
   type: AnimalType
-  breed: Breed
+  /** Free-text breed (e.g. "Angus", "Milk Cow", "Quarter Horse"). */
+  breed: string
+  /** Coat color (e.g. "Black", "Red"). */
+  color?: string
   sex: Sex
   status: AnimalStatus
   /** ISO date (yyyy-mm-dd). */
@@ -86,13 +96,16 @@ export interface Pasture {
 }
 
 export type TaskCategory =
+  | 'ai'
   | 'preg_check'
   | 'vaccination'
+  | 'medicine'
   | 'weaning'
   | 'calving'
   | 'move'
   | 'other'
 
+/** A scheduled item / reminder: a subject + a date (AI scheduling, etc.). */
 export interface Task {
   id: string
   title: string
@@ -100,6 +113,23 @@ export interface Task {
   category: TaskCategory
   animalId?: string
   done: boolean
+  notes?: string
+  createdAt: number
+  updatedAt: number
+  deleted?: boolean
+}
+
+/** A medicine / treatment given to an animal (administration log). */
+export interface Treatment {
+  id: string
+  animalId: string
+  /** ISO date it was given. */
+  date: string
+  /** Product / medicine name. */
+  product: string
+  dose?: string
+  /** Route (e.g. SubQ, IM, oral). */
+  route?: string
   notes?: string
   createdAt: number
   updatedAt: number

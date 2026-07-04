@@ -1,18 +1,19 @@
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
+import { saveTreatment, softDeleteTreatment } from '../db/repo'
 import { BackIcon, ChevronRight, PlusIcon } from '../components/Icons'
 import { EmptyState, SectionTitle, StatusChip, TypeChip } from '../components/ui'
 import { EarTag } from '../components/EarTag'
-import { BREED_LABELS } from '../constants'
-import { ageFrom, formatDate, relativeDays } from '../lib/dates'
+import { ageFrom, formatDate, relativeDays, todayISO } from '../lib/dates'
 import {
   CALVING_WINDOW_LABELS,
   breedingDate,
   calvingWindow,
   projectedCalving,
 } from '../lib/breeding'
-import type { Animal, BreedingRecord, Pasture } from '../types'
+import type { Animal, BreedingRecord, Pasture, Treatment } from '../types'
 
 export default function AnimalDetail() {
   const { id } = useParams()
@@ -24,6 +25,11 @@ export default function AnimalDetail() {
     () => (id ? db.breedings.where('cowId').equals(id).toArray() : Promise.resolve([] as BreedingRecord[])),
     [id],
     [] as BreedingRecord[],
+  )
+  const treatments = useLiveQuery(
+    () => (id ? db.treatments.where('animalId').equals(id).toArray() : Promise.resolve([] as Treatment[])),
+    [id],
+    [] as Treatment[],
   )
 
   if (!animal) return <p className="text-taupe-600">Loading…</p>
@@ -57,7 +63,7 @@ export default function AnimalDetail() {
             {animal.name && <div className="font-display text-lg font-bold text-ink-900">{animal.name}</div>}
             <div className="flex flex-wrap items-center gap-2 text-sm text-taupe-600">
               <TypeChip type={animal.type} />
-              <span>{BREED_LABELS[animal.breed]}</span>
+              <span>{animal.color ? `${animal.color} ${animal.breed}` : animal.breed}</span>
             </div>
           </div>
         </div>
@@ -144,7 +150,106 @@ export default function AnimalDetail() {
           )}
         </>
       )}
+
+      {/* Medicine / treatment log — for every animal */}
+      <Treatments animalId={animal.id} items={treatments.filter((t) => !t.deleted)} />
     </div>
+  )
+}
+
+const BLANK_TREATMENT = { date: todayISO(), product: '', dose: '', route: '', notes: '' }
+
+function Treatments({ animalId, items }: { animalId: string; items: Treatment[] }) {
+  const [adding, setAdding] = useState(false)
+  const [form, setForm] = useState({ ...BLANK_TREATMENT })
+  const sorted = [...items].sort((a, b) => b.date.localeCompare(a.date))
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault()
+    if (!form.product.trim()) return
+    await saveTreatment({
+      animalId,
+      date: form.date || todayISO(),
+      product: form.product.trim(),
+      dose: form.dose.trim() || undefined,
+      route: form.route.trim() || undefined,
+      notes: form.notes.trim() || undefined,
+    })
+    setForm({ ...BLANK_TREATMENT })
+    setAdding(false)
+  }
+
+  return (
+    <>
+      <SectionTitle
+        action={
+          <button onClick={() => setAdding((v) => !v)} className="flex items-center text-sm font-semibold text-cobalt-600">
+            <PlusIcon className="h-4 w-4" /> Add
+          </button>
+        }
+      >
+        Medicine &amp; treatments
+      </SectionTitle>
+
+      {adding && (
+        <form onSubmit={save} className="card mb-2 space-y-3 p-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="field-label">Date</label>
+              <input type="date" className="field-input" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} />
+            </div>
+            <div>
+              <label className="field-label">Product *</label>
+              <input className="field-input" value={form.product} onChange={(e) => setForm((f) => ({ ...f, product: e.target.value }))} placeholder="e.g. UltraBac 7" required />
+            </div>
+            <div>
+              <label className="field-label">Dose</label>
+              <input className="field-input" value={form.dose} onChange={(e) => setForm((f) => ({ ...f, dose: e.target.value }))} placeholder="e.g. 5 ml" />
+            </div>
+            <div>
+              <label className="field-label">Route</label>
+              <input className="field-input" list="route-options" value={form.route} onChange={(e) => setForm((f) => ({ ...f, route: e.target.value }))} placeholder="SubQ" />
+              <datalist id="route-options">
+                <option value="SubQ" /><option value="IM" /><option value="Oral" /><option value="Topical" /><option value="IV" />
+              </datalist>
+            </div>
+          </div>
+          <div>
+            <label className="field-label">Notes</label>
+            <input className="field-input" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
+          </div>
+          <button type="submit" className="btn-primary w-full">Save treatment</button>
+        </form>
+      )}
+
+      {sorted.length === 0 ? (
+        <EmptyState title="No treatments logged" hint="Record vaccinations, dewormer, antibiotics, etc." />
+      ) : (
+        <div className="card divide-y divide-taupe-100">
+          {sorted.map((t) => (
+            <div key={t.id} className="flex items-start gap-3 px-4 py-3">
+              <div className="min-w-0 flex-1">
+                <div className="font-medium text-ink-800">
+                  {t.product}
+                  {t.dose && <span className="font-normal text-taupe-600"> · {t.dose}</span>}
+                  {t.route && <span className="font-normal text-taupe-600"> · {t.route}</span>}
+                </div>
+                <div className="text-xs text-taupe-600">
+                  {formatDate(t.date)}
+                  {t.notes && ` · ${t.notes}`}
+                </div>
+              </div>
+              <button
+                onClick={() => softDeleteTreatment(t.id)}
+                className="text-xs font-semibold text-taupe-400 hover:text-red-600"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   )
 }
 

@@ -39,6 +39,10 @@ const TYPE_TONES: Record<AnimalType, string> = {
   calf: 'bg-amber-100 text-amber-800',
   heifer: 'bg-emerald-100 text-emerald-800',
   steer: 'bg-red-100 text-red-800',
+  show: 'bg-purple-100 text-purple-800',
+  horse: 'bg-orange-100 text-orange-800',
+  pig: 'bg-pink-100 text-pink-800',
+  donkey: 'bg-taupe-200 text-ink-700',
 }
 
 export function TypeChip({ type }: { type: AnimalType }) {

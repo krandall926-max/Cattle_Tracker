@@ -4,6 +4,7 @@ import type {
   BreedingRecord,
   Pasture,
   Task,
+  Treatment,
   Setting,
 } from '../types'
 
@@ -15,6 +16,7 @@ export class SandCreekDB extends Dexie {
   breedings!: Table<BreedingRecord, string>
   pastures!: Table<Pasture, string>
   tasks!: Table<Task, string>
+  treatments!: Table<Treatment, string>
   settings!: Table<Setting, string>
 
   constructor() {
@@ -28,6 +30,35 @@ export class SandCreekDB extends Dexie {
       tasks: 'id, dueDate, category, done, animalId, updatedAt',
       settings: 'key',
     })
+
+    // v2: add the treatments (medicine log) table, and migrate breed enums to
+    // free-text breed + a separate color (Black/Red Angus → Angus + color).
+    this.version(2)
+      .stores({
+        animals: 'id, tag, type, breed, status, damId, pastureId, updatedAt',
+        breedings: 'id, cowId, method, expectedCalvingDate, pregCheckResult, updatedAt',
+        pastures: 'id, name, updatedAt',
+        tasks: 'id, dueDate, category, done, animalId, updatedAt',
+        treatments: 'id, animalId, date, updatedAt',
+        settings: 'key',
+      })
+      .upgrade(async (tx) => {
+        const migrate: Record<string, { breed: string; color?: string }> = {
+          black_angus: { breed: 'Angus', color: 'Black' },
+          red_angus: { breed: 'Angus', color: 'Red' },
+          milk_cow: { breed: 'Milk Cow' },
+        }
+        await tx
+          .table('animals')
+          .toCollection()
+          .modify((a: Animal) => {
+            const m = migrate[a.breed as string]
+            if (m) {
+              a.breed = m.breed
+              if (m.color && !a.color) a.color = m.color
+            }
+          })
+      })
   }
 }
 

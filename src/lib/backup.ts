@@ -1,9 +1,10 @@
 import { db } from '../db/db'
-import { saveAnimal } from '../db/repo'
+import { saveAnimal, saveBreeding } from '../db/repo'
 import { newId } from './id'
 import { todayISO } from './dates'
-import type { Animal, AnimalType, Breed, Sex } from '../types'
-import { BREED_LABELS } from '../constants'
+import { projectedCalving } from './breeding'
+import type { Animal, AnimalType, RegistryCode, Sex } from '../types'
+import { TYPE_LABELS } from '../constants'
 
 // Backup + import. Until cloud sync lands, this is how data leaves and returns
 // to a device: a single JSON file the owner can save to their phone, email, or
@@ -82,72 +83,151 @@ async function mergeTable<T extends { id: string; updatedAt: number }>(
   }
 }
 
-// ---- Starter herd CSV import ------------------------------------------------
+// ---- Herd spreadsheet import ------------------------------------------------
 //
-// The transcribed tag list ships in public/starter-herd.csv. Columns:
-//   tag, breed, type, sex, registry, notes
-// This importer is forgiving: unknown breeds fall back to Black Angus and are
-// flagged in notes, so a typo never blocks the whole load.
+// Column-driven so the same importer reads the transcribed starter CSV and the
+// fill-in template. Headers are matched loosely (case-insensitive, with a few
+// aliases). "Black Angus"/"Red Angus" split into breed "Angus" + a color; a
+// separate Color column wins if present. Dam links resolve by tag, and an AI
+// Date / Semen creates a breeding record automatically.
 
-const BREED_BY_LABEL: Record<string, Breed> = Object.fromEntries(
-  Object.entries(BREED_LABELS).map(([k, v]) => [v.toLowerCase(), k as Breed]),
-) as Record<string, Breed>
+const TYPE_BY_LABEL: Record<string, AnimalType> = Object.fromEntries(
+  Object.entries(TYPE_LABELS).map(([k, v]) => [v.toLowerCase(), k as AnimalType]),
+) as Record<string, AnimalType>
+
+function parseType(raw: string): AnimalType {
+  const t = raw.trim().toLowerCase()
+  if (!t) return 'cow'
+  if (TYPE_BY_LABEL[t]) return TYPE_BY_LABEL[t]
+  if (['cow', 'bull', 'calf', 'heifer', 'steer', 'show', 'horse', 'pig', 'donkey'].includes(t)) {
+    return t as AnimalType
+  }
+  return 'cow'
+}
+
+function parseSex(raw: string, type: AnimalType): Sex {
+  const s = raw.trim().toUpperCase()
+  if (s.startsWith('M')) return 'M'
+  if (s.startsWith('F')) return 'F'
+  return type === 'bull' || type === 'steer' ? 'M' : 'F'
+}
+
+/** Split legacy "Black Angus"/"Red Angus" into breed + color. */
+function parseBreedColor(rawBreed: string, rawColor: string): { breed: string; color?: string } {
+  const breed = rawBreed.trim()
+  const color = rawColor.trim()
+  const lower = breed.toLowerCase()
+  if (lower === 'black angus') return { breed: 'Angus', color: color || 'Black' }
+  if (lower === 'red angus') return { breed: 'Angus', color: color || 'Red' }
+  return { breed: breed || 'Angus', color: color || undefined }
+}
 
 export interface CsvImportResult {
   added: number
   skipped: number
   total: number
+  breedings: number
 }
 
 export async function importStarterHerdCsv(text: string): Promise<CsvImportResult> {
   const rows = parseCsv(text)
-  if (rows.length === 0) return { added: 0, skipped: 0, total: 0 }
+  if (rows.length === 0) return { added: 0, skipped: 0, total: 0, breedings: 0 }
   const header = rows[0].map((h) => h.trim().toLowerCase())
-  const idx = (name: string) => header.indexOf(name)
-  const iTag = idx('tag')
-  const iBreed = idx('breed')
-  const iType = idx('type')
-  const iSex = idx('sex')
-  const iReg = idx('registry')
-  const iNotes = idx('notes')
+  const idx = (...names: string[]) => {
+    for (const n of names) {
+      const i = header.indexOf(n)
+      if (i !== -1) return i
+    }
+    return -1
+  }
+  const col = {
+    tag: idx('tag', 'tag #', 'tag#', 'tag number'),
+    name: idx('name'),
+    type: idx('type'),
+    breed: idx('breed'),
+    color: idx('color', 'colour'),
+    sex: idx('sex'),
+    status: idx('status'),
+    birth: idx('birth date', 'birthdate', 'born', 'dob'),
+    purchase: idx('purchase date', 'purchased'),
+    dam: idx('dam tag', 'dam', 'mother'),
+    sire: idx('sire tag', 'sire'),
+    registry: idx('registry', 'registry (gen/val)', 'gen/val', 'marking'),
+    aiDate: idx('ai date', 'ai'),
+    semen: idx('semen/sire', 'semen', 'semen / sire', 'ai sire'),
+    notes: idx('notes'),
+  }
+  const cell = (row: string[], i: number) => (i === -1 ? '' : (row[i] ?? '').trim())
 
-  const existing = new Set(
-    (await db.animals.toArray()).filter((a) => !a.deleted).map((a) => a.tag.toUpperCase()),
-  )
+  const existing = await db.animals.toArray()
+  const byTag = new Map<string, string>() // upper(tag) -> id
+  for (const a of existing) if (!a.deleted) byTag.set(a.tag.toUpperCase(), a.id)
 
   let added = 0
   let skipped = 0
+  let breedings = 0
+  const damLinks: { childId: string; damTag: string }[] = []
+
   for (const row of rows.slice(1)) {
-    const tag = (row[iTag] ?? '').trim()
+    const tag = cell(row, col.tag)
     if (!tag) continue
-    if (existing.has(tag.toUpperCase())) {
+    if (byTag.has(tag.toUpperCase())) {
       skipped++
       continue
     }
-    const breedLabel = (row[iBreed] ?? '').trim().toLowerCase()
-    const breed = BREED_BY_LABEL[breedLabel] ?? 'black_angus'
-    const type = (row[iType]?.trim().toLowerCase() as AnimalType) || 'cow'
-    const sex = ((row[iSex] ?? '').trim().toUpperCase() as Sex) || 'F'
-    const registry = (row[iReg] ?? '').trim()
-    const csvNotes = (row[iNotes] ?? '').trim()
-    const notes = [csvNotes, breedLabel && !BREED_BY_LABEL[breedLabel] ? `breed "${row[iBreed]}" not recognized — set to Black Angus` : '']
-      .filter(Boolean)
-      .join(' · ')
+    const type = parseType(cell(row, col.type))
+    const { breed, color } = parseBreedColor(cell(row, col.breed), cell(row, col.color))
+    const sex = parseSex(cell(row, col.sex), type)
+    const registry = cell(row, col.registry)
+    const statusRaw = cell(row, col.status).toLowerCase()
+    const status = (['active', 'sold', 'deceased', 'cull'] as const).find((s) => s === statusRaw) ?? 'active'
 
+    const id = newId()
     await saveAnimal({
-      id: newId(),
+      id,
       tag,
-      type: ['cow', 'bull', 'calf', 'heifer', 'steer'].includes(type) ? type : 'cow',
+      name: cell(row, col.name) || undefined,
+      type,
       breed,
-      sex: sex === 'M' ? 'M' : 'F',
-      status: 'active',
-      registryCode: registry === 'Gen' || registry === 'Val' ? registry : '',
-      notes: notes || undefined,
+      color,
+      sex,
+      status,
+      birthDate: cell(row, col.birth) || undefined,
+      purchaseDate: cell(row, col.purchase) || undefined,
+      sireTag: cell(row, col.sire) || undefined,
+      registryCode: (registry === 'Gen' || registry === 'Val' ? registry : '') as RegistryCode,
+      notes: cell(row, col.notes) || undefined,
     })
-    existing.add(tag.toUpperCase())
+    byTag.set(tag.toUpperCase(), id)
     added++
+
+    const damTag = cell(row, col.dam)
+    if (damTag) damLinks.push({ childId: id, damTag })
+
+    const aiDate = cell(row, col.aiDate)
+    const semen = cell(row, col.semen)
+    if (aiDate || semen) {
+      await saveBreeding({
+        cowId: id,
+        method: 'AI',
+        aiDate: aiDate || undefined,
+        aiSire: semen || undefined,
+        expectedCalvingDate: aiDate ? projectedCalving({ method: 'AI', aiDate } as never) : undefined,
+      })
+      breedings++
+    }
   }
-  return { added, skipped, total: rows.length - 1 }
+
+  // Second pass: resolve dam links now that every tag is known.
+  for (const { childId, damTag } of damLinks) {
+    const damId = byTag.get(damTag.toUpperCase())
+    if (damId) {
+      const child = await db.animals.get(childId)
+      if (child) await saveAnimal({ ...child, damId })
+    }
+  }
+
+  return { added, skipped, total: rows.length - 1, breedings }
 }
 
 /** Minimal CSV parser that handles quoted fields and commas within quotes. */

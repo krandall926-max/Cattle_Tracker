@@ -5,6 +5,7 @@ import type {
   BreedingRecord,
   Pasture,
   Task,
+  Treatment,
 } from '../types'
 
 // Thin data-access helpers. Components call these instead of touching Dexie
@@ -110,4 +111,32 @@ export async function saveTask(
 export async function softDeleteTask(id: string): Promise<void> {
   const t = await db.tasks.get(id)
   if (t) await db.tasks.put(touch({ ...t, deleted: true }))
+}
+
+// ---- Treatments (medicine log) ---------------------------------------------
+
+export async function saveTreatment(
+  input: Omit<Treatment, 'id' | 'createdAt' | 'updatedAt'> &
+    Partial<Pick<Treatment, 'id'>>,
+): Promise<string> {
+  const id = input.id ?? newId()
+  const existing = input.id ? await db.treatments.get(input.id) : undefined
+  const record: Treatment = touch({
+    createdAt: existing?.createdAt ?? 0,
+    ...existing,
+    ...input,
+    id,
+  } as Treatment)
+  await db.treatments.put(record)
+  return id
+}
+
+export async function softDeleteTreatment(id: string): Promise<void> {
+  const t = await db.treatments.get(id)
+  if (t) await db.treatments.put(touch({ ...t, deleted: true }))
+}
+
+export async function treatmentsOf(animalId: string): Promise<Treatment[]> {
+  const list = await db.treatments.where('animalId').equals(animalId).toArray()
+  return list.filter((t) => !t.deleted).sort((a, b) => b.date.localeCompare(a.date))
 }
