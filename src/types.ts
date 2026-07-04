@@ -46,6 +46,21 @@ export interface Animal {
   sireId?: string
   /** Free-text sire/semen name for AI breedings not tied to an on-farm bull. */
   sireTag?: string
+
+  // Performance measurements — from the Individual Beef Cow Record sheet.
+  birthWeight?: number
+  weaningDate?: string
+  weaningWeight?: number
+  /** Adjusted (205-day) weaning weight. */
+  adjWeaningWeight?: number
+  /** Average daily gain (a.k.a. Daily Gain). */
+  avgDailyGain?: number
+  herdIndex?: number
+  /** Quality score — kept as text to allow "15.5", "Choice", grades, etc. */
+  qualityScore?: string
+  yearlingWeight?: number
+  yearlingGain?: number
+
   pastureId?: string
   /** Hidden marker stripped from the handwritten tag list ("Gen"/"Val"). */
   registryCode?: RegistryCode

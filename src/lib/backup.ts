@@ -155,9 +155,22 @@ export async function importStarterHerdCsv(text: string): Promise<CsvImportResul
     registry: idx('registry', 'registry (gen/val)', 'gen/val', 'marking'),
     aiDate: idx('ai date', 'ai'),
     semen: idx('semen/sire', 'semen', 'semen / sire', 'ai sire'),
-    notes: idx('notes'),
+    birthWt: idx('birth wt', 'birth weight', 'bw'),
+    weaningDate: idx('weaning date', 'weaned'),
+    weaningWt: idx('weaning wt', 'weaning weight', 'ww'),
+    adjWt: idx('adj weaning wt', 'adj. weaning wt', 'adjusted weaning wt', 'adj ww'),
+    adg: idx('daily gain', 'adg', 'avg daily gain'),
+    herdIndex: idx('herd index', 'index'),
+    qualityScore: idx('quality score', 'quality', 'qs'),
+    yearlingWt: idx('yearling wt', 'yearling weight'),
+    yearlingGain: idx('yearling gain'),
+    notes: idx('notes', 'remarks'),
   }
   const cell = (row: string[], i: number) => (i === -1 ? '' : (row[i] ?? '').trim())
+  const numCell = (row: string[], i: number) => {
+    const v = parseFloat(cell(row, i))
+    return Number.isNaN(v) ? undefined : v
+  }
 
   const existing = await db.animals.toArray()
   const byTag = new Map<string, string>() // upper(tag) -> id
@@ -196,6 +209,15 @@ export async function importStarterHerdCsv(text: string): Promise<CsvImportResul
       purchaseDate: cell(row, col.purchase) || undefined,
       sireTag: cell(row, col.sire) || undefined,
       registryCode: (registry === 'Gen' || registry === 'Val' ? registry : '') as RegistryCode,
+      birthWeight: numCell(row, col.birthWt),
+      weaningDate: cell(row, col.weaningDate) || undefined,
+      weaningWeight: numCell(row, col.weaningWt),
+      adjWeaningWeight: numCell(row, col.adjWt),
+      avgDailyGain: numCell(row, col.adg),
+      herdIndex: numCell(row, col.herdIndex),
+      qualityScore: cell(row, col.qualityScore) || undefined,
+      yearlingWeight: numCell(row, col.yearlingWt),
+      yearlingGain: numCell(row, col.yearlingGain),
       notes: cell(row, col.notes) || undefined,
     })
     byTag.set(tag.toUpperCase(), id)

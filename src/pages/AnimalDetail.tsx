@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { saveTreatment, softDeleteTreatment } from '../db/repo'
-import { BackIcon, ChevronRight, PlusIcon } from '../components/Icons'
+import { BackIcon, PlusIcon } from '../components/Icons'
 import { EmptyState, SectionTitle, StatusChip, TypeChip } from '../components/ui'
 import { EarTag } from '../components/EarTag'
 import { ageFrom, formatDate, relativeDays, todayISO } from '../lib/dates'
@@ -102,26 +102,79 @@ export default function AnimalDetail() {
         {animal.notes && <p className="mt-3 whitespace-pre-wrap border-t border-taupe-100 pt-3 text-sm text-taupe-600">{animal.notes}</p>}
       </div>
 
-      {/* Cow-calf pairs */}
+      {/* This animal's own performance numbers */}
+      {hasPerformance(animal) && (
+        <>
+          <SectionTitle>Performance</SectionTitle>
+          <dl className="card grid grid-cols-2 gap-y-3 p-4 text-sm sm:grid-cols-3">
+            {animal.birthWeight != null && <Detail label="Birth wt" value={`${animal.birthWeight} lb`} />}
+            {animal.weaningWeight != null && <Detail label="Weaning wt" value={`${animal.weaningWeight} lb`} />}
+            {animal.weaningDate && <Detail label="Weaned" value={formatDate(animal.weaningDate)} />}
+            {animal.adjWeaningWeight != null && <Detail label="Adj. weaning" value={String(animal.adjWeaningWeight)} />}
+            {animal.avgDailyGain != null && <Detail label="Daily gain" value={String(animal.avgDailyGain)} />}
+            {animal.herdIndex != null && <Detail label="Herd index" value={String(animal.herdIndex)} />}
+            {animal.qualityScore && <Detail label="Quality score" value={animal.qualityScore} />}
+            {animal.yearlingWeight != null && <Detail label="Yearling wt" value={`${animal.yearlingWeight} lb`} />}
+            {animal.yearlingGain != null && <Detail label="Yearling gain" value={String(animal.yearlingGain)} />}
+          </dl>
+        </>
+      )}
+
+      {/* Calf record — the cow's produce history, all calves in one view,
+          modeled on the Individual Beef Cow Record sheet. Tap a row for detail. */}
       {(animal.type === 'cow' || animal.type === 'heifer') && (
         <>
-          <SectionTitle>Calves ({calves.length})</SectionTitle>
+          <SectionTitle
+            action={
+              <Link to={`/herd/new?dam=${animal.id}`} className="flex items-center text-sm font-semibold text-cobalt-600">
+                <PlusIcon className="h-4 w-4" /> Add calf
+              </Link>
+            }
+          >
+            Calf record ({calves.length})
+          </SectionTitle>
           {calves.length === 0 ? (
             <EmptyState title="No calves linked yet" hint="Add a calf and set this cow as its dam." />
           ) : (
-            <div className="card divide-y divide-taupe-100">
-              {calves
-                .sort((a, b) => (b.birthDate ?? '').localeCompare(a.birthDate ?? ''))
-                .map((c) => (
-                  <Link key={c.id} to={`/herd/${c.id}`} className="flex items-center gap-3 px-4 py-3 active:bg-sand-50">
-                    <TypeChip type={c.type} />
-                    <span className="font-medium text-ink-800">{c.tag}</span>
-                    <span className="text-sm text-taupe-600">
-                      {c.birthDate ? `Born ${formatDate(c.birthDate)}` : ''}
-                    </span>
-                    <ChevronRight className="ml-auto h-5 w-5 text-taupe-200" />
-                  </Link>
-                ))}
+            <div className="card overflow-x-auto">
+              <table className="w-full min-w-[620px] text-sm">
+                <thead>
+                  <tr className="border-b border-taupe-200 text-left text-[11px] uppercase tracking-wide text-taupe-400">
+                    <th className="px-3 py-2 font-semibold">Year</th>
+                    <th className="px-2 py-2 font-semibold">Tag</th>
+                    <th className="px-2 py-2 font-semibold">Sex</th>
+                    <th className="px-2 py-2 font-semibold">Sire</th>
+                    <th className="px-2 py-2 text-right font-semibold" title="Birth weight">BW</th>
+                    <th className="px-2 py-2 text-right font-semibold" title="Weaning weight">WW</th>
+                    <th className="px-2 py-2 text-right font-semibold" title="Adjusted weaning weight">Adj</th>
+                    <th className="px-2 py-2 text-right font-semibold" title="Avg daily gain">ADG</th>
+                    <th className="px-2 py-2 text-right font-semibold" title="Herd index">Idx</th>
+                    <th className="px-3 py-2 text-right font-semibold" title="Quality score">QS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {calves
+                    .sort((a, b) => (b.birthDate ?? '').localeCompare(a.birthDate ?? ''))
+                    .map((c) => (
+                      <tr
+                        key={c.id}
+                        onClick={() => nav(`/herd/${c.id}`)}
+                        className="cursor-pointer border-b border-taupe-100 last:border-0 hover:bg-sand-50"
+                      >
+                        <td className="px-3 py-2 text-taupe-600">{c.birthDate ? c.birthDate.slice(0, 4) : '—'}</td>
+                        <td className="whitespace-nowrap px-2 py-2 font-semibold text-cobalt-700">{c.tag}</td>
+                        <td className="px-2 py-2">{sexLetter(c)}</td>
+                        <td className="whitespace-nowrap px-2 py-2 text-taupe-600">{byId(c.sireId)?.tag ?? c.sireTag ?? '—'}</td>
+                        <td className="px-2 py-2 text-right tabular-nums">{c.birthWeight ?? ''}</td>
+                        <td className="px-2 py-2 text-right tabular-nums">{c.weaningWeight ?? ''}</td>
+                        <td className="px-2 py-2 text-right tabular-nums">{c.adjWeaningWeight ?? ''}</td>
+                        <td className="px-2 py-2 text-right tabular-nums">{c.avgDailyGain ?? ''}</td>
+                        <td className="px-2 py-2 text-right tabular-nums">{c.herdIndex ?? ''}</td>
+                        <td className="px-3 py-2 text-right tabular-nums">{c.qualityScore ?? ''}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
           )}
         </>
@@ -250,6 +303,29 @@ function Treatments({ animalId, items }: { animalId: string; items: Treatment[] 
         </div>
       )}
     </>
+  )
+}
+
+/** Short sex/class letter for the calf record: Steer, Heifer, Bull, Cow. */
+function sexLetter(a: Animal): string {
+  if (a.type === 'steer') return 'S'
+  if (a.type === 'heifer') return 'H'
+  if (a.type === 'bull') return 'B'
+  if (a.type === 'cow') return 'C'
+  return a.sex
+}
+
+function hasPerformance(a: Animal): boolean {
+  return (
+    a.birthWeight != null ||
+    a.weaningWeight != null ||
+    a.adjWeaningWeight != null ||
+    a.avgDailyGain != null ||
+    a.herdIndex != null ||
+    a.yearlingWeight != null ||
+    a.yearlingGain != null ||
+    Boolean(a.qualityScore) ||
+    Boolean(a.weaningDate)
   )
 }
 

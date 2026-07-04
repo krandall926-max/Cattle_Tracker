@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { saveAnimal, softDeleteAnimal } from '../db/repo'
@@ -30,8 +30,19 @@ const BLANK = {
   purchaseDate: '',
   damId: '',
   sireId: '',
+  sireTag: '',
   pastureId: '',
   registryCode: '' as RegistryCode,
+  // Performance measurements (stored as strings in the form).
+  birthWeight: '',
+  weaningDate: '',
+  weaningWeight: '',
+  adjWeaningWeight: '',
+  avgDailyGain: '',
+  herdIndex: '',
+  qualityScore: '',
+  yearlingWeight: '',
+  yearlingGain: '',
   notes: '',
 }
 
@@ -40,11 +51,21 @@ function defaultSex(type: AnimalType): Sex {
   return type === 'bull' || type === 'steer' ? 'M' : 'F'
 }
 
+/** Parse a numeric form field, empty → undefined. */
+function num(s: string): number | undefined {
+  const n = parseFloat(s)
+  return s.trim() === '' || Number.isNaN(n) ? undefined : n
+}
+
 export default function AnimalForm() {
   const { id } = useParams()
+  const [params] = useSearchParams()
   const nav = useNavigate()
   const editing = Boolean(id)
-  const [form, setForm] = useState({ ...BLANK })
+  const [form, setForm] = useState(() => {
+    const dam = params.get('dam')
+    return dam ? { ...BLANK, type: 'calf' as AnimalType, damId: dam } : { ...BLANK }
+  })
   const [loaded, setLoaded] = useState(!editing)
 
   const animals = useLiveQuery(() => db.animals.toArray(), [], [] as Animal[])
@@ -67,8 +88,18 @@ export default function AnimalForm() {
           purchaseDate: a.purchaseDate ?? '',
           damId: a.damId ?? '',
           sireId: a.sireId ?? '',
+          sireTag: a.sireTag ?? '',
           pastureId: a.pastureId ?? '',
           registryCode: a.registryCode ?? '',
+          birthWeight: a.birthWeight?.toString() ?? '',
+          weaningDate: a.weaningDate ?? '',
+          weaningWeight: a.weaningWeight?.toString() ?? '',
+          adjWeaningWeight: a.adjWeaningWeight?.toString() ?? '',
+          avgDailyGain: a.avgDailyGain?.toString() ?? '',
+          herdIndex: a.herdIndex?.toString() ?? '',
+          qualityScore: a.qualityScore ?? '',
+          yearlingWeight: a.yearlingWeight?.toString() ?? '',
+          yearlingGain: a.yearlingGain?.toString() ?? '',
           notes: a.notes ?? '',
         })
       }
@@ -96,8 +127,18 @@ export default function AnimalForm() {
       purchaseDate: form.purchaseDate || undefined,
       damId: form.damId || undefined,
       sireId: form.sireId || undefined,
+      sireTag: form.sireTag.trim() || undefined,
       pastureId: form.pastureId || undefined,
       registryCode: form.registryCode || '',
+      birthWeight: num(form.birthWeight),
+      weaningDate: form.weaningDate || undefined,
+      weaningWeight: num(form.weaningWeight),
+      adjWeaningWeight: num(form.adjWeaningWeight),
+      avgDailyGain: num(form.avgDailyGain),
+      herdIndex: num(form.herdIndex),
+      qualityScore: form.qualityScore.trim() || undefined,
+      yearlingWeight: num(form.yearlingWeight),
+      yearlingGain: num(form.yearlingGain),
       notes: form.notes.trim() || undefined,
     })
     nav(id ? `/herd/${id}` : '/herd')
@@ -238,8 +279,55 @@ export default function AnimalForm() {
                 ))}
               </select>
             </div>
+            <div className="col-span-2">
+              <label className="field-label">Sire name (AI / other)</label>
+              <input className="field-input" value={form.sireTag} onChange={(e) => set('sireTag', e.target.value)} placeholder="e.g. Leddon, NS (natural service)" />
+            </div>
           </div>
         )}
+
+        {/* Performance measurements — from the Individual Beef Cow Record. */}
+        <div className="border-t border-taupe-100 pt-4">
+          <p className="mb-2 text-sm font-semibold text-ink-700">Performance &amp; measurements</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="field-label">Birth wt (lb)</label>
+              <input type="number" inputMode="decimal" className="field-input" value={form.birthWeight} onChange={(e) => set('birthWeight', e.target.value)} />
+            </div>
+            <div>
+              <label className="field-label">Weaning date</label>
+              <input type="date" className="field-input" value={form.weaningDate} onChange={(e) => set('weaningDate', e.target.value)} />
+            </div>
+            <div>
+              <label className="field-label">Weaning wt (lb)</label>
+              <input type="number" inputMode="decimal" className="field-input" value={form.weaningWeight} onChange={(e) => set('weaningWeight', e.target.value)} />
+            </div>
+            <div>
+              <label className="field-label">Adj. weaning wt</label>
+              <input type="number" inputMode="decimal" className="field-input" value={form.adjWeaningWeight} onChange={(e) => set('adjWeaningWeight', e.target.value)} />
+            </div>
+            <div>
+              <label className="field-label">Daily gain (ADG)</label>
+              <input type="number" inputMode="decimal" step="0.01" className="field-input" value={form.avgDailyGain} onChange={(e) => set('avgDailyGain', e.target.value)} />
+            </div>
+            <div>
+              <label className="field-label">Herd index</label>
+              <input type="number" inputMode="decimal" className="field-input" value={form.herdIndex} onChange={(e) => set('herdIndex', e.target.value)} />
+            </div>
+            <div>
+              <label className="field-label">Quality score</label>
+              <input className="field-input" value={form.qualityScore} onChange={(e) => set('qualityScore', e.target.value)} placeholder="e.g. 15.5 / Choice" />
+            </div>
+            <div>
+              <label className="field-label">Yearling wt (lb)</label>
+              <input type="number" inputMode="decimal" className="field-input" value={form.yearlingWeight} onChange={(e) => set('yearlingWeight', e.target.value)} />
+            </div>
+            <div>
+              <label className="field-label">Yearling gain</label>
+              <input type="number" inputMode="decimal" step="0.01" className="field-input" value={form.yearlingGain} onChange={(e) => set('yearlingGain', e.target.value)} />
+            </div>
+          </div>
+        </div>
 
         <div>
           <label className="field-label">Notes</label>

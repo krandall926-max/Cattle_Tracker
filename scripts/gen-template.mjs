@@ -19,7 +19,16 @@ const COLS = [
   { header: 'Registry (Gen/Val)', key: 'registry', width: 16, list: 'Gen,Val' },
   { header: 'AI Date', key: 'aiDate', width: 12, date: true, note: 'For AI cows only.' },
   { header: 'Semen/Sire', key: 'semen', width: 18, note: 'AI sire / semen name or code.' },
-  { header: 'Notes', key: 'notes', width: 28 },
+  { header: 'Birth Wt', key: 'birthWt', width: 9, note: 'Birth weight (lb).' },
+  { header: 'Weaning Date', key: 'weaningDate', width: 13, date: true },
+  { header: 'Weaning Wt', key: 'weaningWt', width: 11, note: 'Weaning weight (lb).' },
+  { header: 'Adj Weaning Wt', key: 'adjWt', width: 13, note: 'Adjusted (205-day) weaning weight.' },
+  { header: 'Daily Gain', key: 'adg', width: 10, note: 'Average daily gain (ADG).' },
+  { header: 'Herd Index', key: 'herdIndex', width: 10 },
+  { header: 'Quality Score', key: 'qualityScore', width: 12, note: 'e.g. 15.5 or Choice.' },
+  { header: 'Yearling Wt', key: 'yearlingWt', width: 11 },
+  { header: 'Yearling Gain', key: 'yearlingGain', width: 12 },
+  { header: 'Notes', key: 'notes', width: 28, note: 'Remarks (health, sale info, disposition…).' },
 ]
 
 const wb = new ExcelJS.Workbook()
