@@ -98,7 +98,7 @@ export default function BreedingForm() {
     nav('/breeding')
   }
 
-  if (!loaded) return <p className="text-slate-500">Loading…</p>
+  if (!loaded) return <p className="text-taupe-600">Loading…</p>
 
   return (
     <div>
@@ -106,7 +106,7 @@ export default function BreedingForm() {
         <button onClick={() => nav(-1)} className="btn-ghost px-2 py-2">
           <BackIcon className="h-5 w-5" />
         </button>
-        <h1 className="text-xl font-bold text-slate-900">{editing ? 'Edit breeding' : 'Log breeding'}</h1>
+        <h1 className="text-xl font-bold text-ink-900">{editing ? 'Edit breeding' : 'Log breeding'}</h1>
       </div>
 
       <form onSubmit={onSubmit} className="mt-4 space-y-4">
@@ -128,7 +128,7 @@ export default function BreedingForm() {
                 key={m}
                 type="button"
                 onClick={() => set('method', m)}
-                className={`btn ${form.method === m ? 'bg-cobalt-600 text-white' : 'bg-slate-100 text-slate-700'}`}
+                className={`btn ${form.method === m ? 'bg-cobalt-600 text-white' : 'bg-taupe-100 text-ink-700'}`}
               >
                 {m === 'AI' ? 'Artificial Insemination' : 'Natural (Bull)'}
               </button>
@@ -175,8 +175,8 @@ export default function BreedingForm() {
           </div>
         )}
 
-        <div className="border-t border-slate-100 pt-4">
-          <p className="mb-2 text-sm font-semibold text-slate-700">Pregnancy check</p>
+        <div className="border-t border-taupe-100 pt-4">
+          <p className="mb-2 text-sm font-semibold text-ink-700">Pregnancy check</p>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="field-label">Check date</label>

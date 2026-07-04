@@ -36,12 +36,12 @@ export default function Pastures() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Pastures</h1>
+        <h1 className="text-2xl font-bold text-ink-900">Pastures</h1>
         <button onClick={() => setAdding((v) => !v)} className="btn-primary px-3 py-2">
           <PlusIcon className="h-5 w-5" /> Add
         </button>
       </div>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="mt-1 text-sm text-taupe-600">
         From the ranch map. Wells &amp; gates can be added later.
       </p>
 
@@ -65,8 +65,8 @@ export default function Pastures() {
           list.map((p) => (
             <div key={p.id} className="card flex items-center gap-3 p-4">
               <div className="min-w-0 flex-1">
-                <div className="font-semibold text-slate-900">{p.name}</div>
-                <div className="text-sm text-slate-500">{countFor(p.id)} active animals</div>
+                <div className="font-semibold text-ink-900">{p.name}</div>
+                <div className="text-sm text-taupe-600">{countFor(p.id)} active animals</div>
               </div>
               <button onClick={() => remove(p)} className="btn-danger px-3 py-1.5 text-xs">Remove</button>
             </div>

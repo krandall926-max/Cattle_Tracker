@@ -45,7 +45,7 @@ export default function Breeding() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Breeding &amp; AI</h1>
+        <h1 className="text-2xl font-bold text-ink-900">Breeding &amp; AI</h1>
         <Link to="/breeding/new" className="btn-primary px-3 py-2">
           <PlusIcon className="h-5 w-5" /> Log
         </Link>
@@ -56,7 +56,7 @@ export default function Breeding() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`chip px-3 py-1.5 ${tab === t ? 'bg-cobalt-600 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}
+            className={`chip px-3 py-1.5 ${tab === t ? 'bg-cobalt-600 text-white' : 'bg-white text-taupe-600 ring-1 ring-taupe-200'}`}
           >
             {t === 'open' ? 'Expecting' : 'All records'}
           </button>
@@ -107,25 +107,25 @@ function Row({ rec, cow, bull }: { rec: BreedingRecord; cow?: Animal; bull?: Ani
         ? 'bg-amber-50 text-amber-700'
         : window === 'due_later'
           ? 'bg-emerald-50 text-emerald-700'
-          : 'bg-slate-100 text-slate-600'
+          : 'bg-taupe-100 text-taupe-600'
   return (
-    <Link to={`/breeding/${rec.id}/edit`} className="card block p-4 active:bg-slate-50">
+    <Link to={`/breeding/${rec.id}/edit`} className="card block p-4 active:bg-sand-50">
       <div className="flex items-center justify-between gap-2">
-        <span className="font-semibold text-slate-900">{cow?.tag ?? 'Unknown cow'}</span>
+        <span className="font-semibold text-ink-900">{cow?.tag ?? 'Unknown cow'}</span>
         {rec.actualCalvingDate ? (
-          <span className="chip bg-slate-100 text-slate-600">Calved</span>
+          <span className="chip bg-taupe-100 text-taupe-600">Calved</span>
         ) : (
           window !== 'none' && <span className={`chip ${tone}`}>{CALVING_WINDOW_LABELS[window]}</span>
         )}
       </div>
-      <div className="mt-1 text-sm text-slate-500">
+      <div className="mt-1 text-sm text-taupe-600">
         {rec.method === 'AI' ? `AI · ${rec.aiSire || 'sire n/a'}` : `Bull · ${bull?.tag ?? 'n/a'}`}
         {' · bred '}
         {formatDate(breedingDate(rec)) || '—'}
       </div>
       {due && !rec.actualCalvingDate && (
-        <div className="mt-0.5 text-sm font-medium text-slate-700">
-          Due {formatDate(due)} <span className="font-normal text-slate-500">({relativeDays(due)})</span>
+        <div className="mt-0.5 text-sm font-medium text-ink-700">
+          Due {formatDate(due)} <span className="font-normal text-taupe-600">({relativeDays(due)})</span>
         </div>
       )}
     </Link>

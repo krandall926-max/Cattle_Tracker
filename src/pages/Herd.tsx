@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
-import { EmptyState, StatusChip, TypeChip } from '../components/ui'
+import { EmptyState, StatusChip, StatusDot, TypeChip } from '../components/ui'
+import { EarTag } from '../components/EarTag'
 import { SearchIcon, PlusIcon, ChevronRight } from '../components/Icons'
 import { BREED_LABELS } from '../constants'
 import { ageFrom, formatDate } from '../lib/dates'
@@ -46,12 +47,12 @@ export default function Herd() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Herd</h1>
-        <span className="text-sm text-slate-500">{activeCount} active</span>
+        <h1 className="text-2xl font-bold text-ink-900">Herd</h1>
+        <span className="text-sm text-taupe-600">{activeCount} active</span>
       </div>
 
       <div className="relative mt-3">
-        <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+        <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-taupe-400" />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -68,7 +69,7 @@ export default function Herd() {
             key={f.key}
             onClick={() => setFilter(f.key)}
             className={`chip shrink-0 px-3 py-1.5 ${
-              filter === f.key ? 'bg-cobalt-600 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200'
+              filter === f.key ? 'bg-cobalt-600 text-white' : 'bg-white text-taupe-600 ring-1 ring-taupe-200'
             }`}
           >
             {f.label}
@@ -76,12 +77,12 @@ export default function Herd() {
         ))}
       </div>
 
-      <label className="mt-3 flex items-center gap-2 text-sm text-slate-600">
+      <label className="mt-3 flex items-center gap-2 text-sm text-taupe-600">
         <input
           type="checkbox"
           checked={showInactive}
           onChange={(e) => setShowInactive(e.target.checked)}
-          className="rounded border-slate-300 text-cobalt-600 focus:ring-cobalt-500"
+          className="rounded border-taupe-300 text-cobalt-600 focus:ring-cobalt-500"
         />
         Include sold / deceased (history)
       </label>
@@ -115,24 +116,23 @@ function AnimalRow({ animal }: { animal: Animal }) {
       ? `Purchased ${formatDate(animal.purchaseDate)}`
       : ''
   return (
-    <Link to={`/herd/${animal.id}`} className="card flex items-center gap-3 p-3 active:bg-slate-50">
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cobalt-50 text-base font-bold text-cobalt-700">
-        {animal.tag.slice(0, 4)}
-      </div>
+    <Link to={`/herd/${animal.id}`} className="card flex items-center gap-3 p-3 active:bg-sand-50">
+      <EarTag tag={animal.tag} type={animal.type} size="sm" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate font-semibold text-slate-900">
+          <StatusDot status={animal.status} />
+          <span className="truncate font-semibold text-ink-900">
             {animal.name ? `${animal.tag} · ${animal.name}` : animal.tag}
           </span>
           <StatusChip status={animal.status} />
         </div>
-        <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+        <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-taupe-600">
           <TypeChip type={animal.type} />
           <span>{BREED_LABELS[animal.breed]}</span>
           {born && <span className="truncate">· {born}</span>}
         </div>
       </div>
-      <ChevronRight className="h-5 w-5 shrink-0 text-slate-300" />
+      <ChevronRight className="h-5 w-5 shrink-0 text-taupe-200" />
     </Link>
   )
 }

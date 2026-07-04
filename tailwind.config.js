@@ -4,7 +4,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Sand Creek Cattle brand cobalt (matches the logo mark).
+        // Sand Creek Cattle brand cobalt — used as an ACCENT only (actions,
+        // active states, the cow ear-tag). The app's base is neutral cream/ink.
         cobalt: {
           50: '#eef1fe',
           100: '#dfe4fd',
@@ -12,25 +13,35 @@ export default {
           300: '#9aabf7',
           400: '#6f83f1',
           500: '#4a5ce8',
-          600: '#1e35d4', // primary
+          600: '#1e35d4', // primary accent
           700: '#1a2cb0',
           800: '#18268c',
           900: '#182573',
         },
+        // Neutral cream surfaces — the dominant palette.
         sand: {
-          50: '#faf7f0',
-          100: '#f3ecdd',
-          200: '#e7dcc4',
-          300: '#d8c39c',
+          50: '#f8f6f1',
+          100: '#f1ede3',
+          200: '#e4ddcd',
+          300: '#d3c8b1',
         },
-        // Warm leather/rust accent for rancher character alongside the cobalt.
+        // Warm charcoal for the header and primary text (neutral, not black).
+        ink: {
+          700: '#33383f',
+          800: '#25292f',
+          900: '#181b20',
+        },
+        // Muted warm-gray for secondary accents/dividers.
+        taupe: {
+          100: '#eceae4',
+          200: '#dcd8cf',
+          400: '#a89f8f',
+          600: '#726a5c',
+        },
+        // Kept for rare warm touches; used sparingly now.
         leather: {
-          50: '#fbf3ee',
-          100: '#f3e0d3',
           400: '#c08457',
           600: '#9a5a30',
-          700: '#7c4726',
-          800: '#5f3720',
         },
       },
       fontFamily: {

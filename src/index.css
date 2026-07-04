@@ -13,7 +13,7 @@ body,
 }
 
 body {
-  @apply bg-sand-50 bg-hatch text-slate-900 antialiased;
+  @apply bg-sand-50 text-ink-900 antialiased;
   /* Respect phone notches / home indicators. */
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
     env(safe-area-inset-bottom) env(safe-area-inset-left);
@@ -29,7 +29,7 @@ h2,
 
 @layer components {
   .card {
-    @apply rounded-2xl bg-white shadow-sm ring-1 ring-slate-200;
+    @apply rounded-2xl bg-white shadow-sm ring-1 ring-taupe-200;
   }
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
@@ -39,17 +39,17 @@ h2,
     @apply btn bg-cobalt-600 text-white hover:bg-cobalt-700;
   }
   .btn-ghost {
-    @apply btn bg-slate-100 text-slate-700 hover:bg-slate-200;
+    @apply btn bg-taupe-100 text-ink-700 hover:bg-taupe-200;
   }
   .btn-danger {
     @apply btn bg-red-50 text-red-700 hover:bg-red-100;
   }
   .field-label {
-    @apply mb-1 block text-sm font-medium text-slate-600;
+    @apply mb-1 block text-sm font-medium text-taupe-600;
   }
   .field-input {
-    @apply w-full rounded-xl border-slate-300 bg-white px-3 py-2.5 text-base
-      shadow-sm focus:border-cobalt-500 focus:ring-cobalt-500;
+    @apply w-full rounded-xl border-taupe-200 bg-white px-3 py-2.5 text-base
+      text-ink-900 shadow-sm focus:border-cobalt-500 focus:ring-cobalt-500;
   }
   .chip {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold;

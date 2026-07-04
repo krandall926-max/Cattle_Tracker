@@ -62,7 +62,7 @@ export default function Settings() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">More</h1>
+      <h1 className="text-2xl font-bold text-ink-900">More</h1>
 
       {msg && (
         <div className="mt-3 rounded-xl bg-cobalt-50 px-4 py-3 text-sm font-medium text-cobalt-800">{msg}</div>
@@ -70,11 +70,11 @@ export default function Settings() {
 
       <SectionTitle>Backup &amp; restore</SectionTitle>
       <div className="card space-y-3 p-4">
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-taupe-600">
           Your herd lives on this device and works offline. Export a backup file regularly and keep a copy safe —
           it's the current way to move data to another phone. Automatic cloud sync is the next planned step.
         </p>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-taupe-600">
           {total} records · last backup: {lastBackup ? formatDate(lastBackup.slice(0, 10)) : 'never'}
         </p>
         <div className="flex flex-wrap gap-2">
@@ -98,9 +98,9 @@ export default function Settings() {
 
       <SectionTitle>Starter herd</SectionTitle>
       <div className="card space-y-3 p-4">
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-taupe-600">
           Loads the transcribed tag list (from the handwritten sheets) into the herd. Review the list against the
-          original first — the file lives at <code className="rounded bg-slate-100 px-1">public/starter-herd.csv</code>.
+          original first — the file lives at <code className="rounded bg-taupe-100 px-1">public/starter-herd.csv</code>.
           Animals already present are skipped, so it's safe to run more than once.
         </p>
         <button onClick={onLoadStarter} disabled={busy} className="btn-ghost">
@@ -109,19 +109,19 @@ export default function Settings() {
       </div>
 
       <SectionTitle>About sync</SectionTitle>
-      <div className="card space-y-2 p-4 text-sm text-slate-600">
+      <div className="card space-y-2 p-4 text-sm text-taupe-600">
         <p>
-          <strong className="text-slate-800">No logins.</strong> This is built for a family operation — no accounts to
+          <strong className="text-ink-800">No logins.</strong> This is built for a family operation — no accounts to
           juggle in the pasture.
         </p>
         <p>
-          <strong className="text-slate-800">Multiple devices editing at once</strong> needs a shared cloud copy, which
+          <strong className="text-ink-800">Multiple devices editing at once</strong> needs a shared cloud copy, which
           is the planned next phase: one simple farm code, everyone's edits merged automatically. Today each device keeps
           its own copy; use Export/Restore to move data between phones in the meantime.
         </p>
       </div>
 
-      <p className="mt-6 text-center text-xs text-slate-400">Sand Creek Cattle · v0.1</p>
+      <p className="mt-6 text-center text-xs text-taupe-400">Sand Creek Cattle · v0.1</p>
     </div>
   )
 }

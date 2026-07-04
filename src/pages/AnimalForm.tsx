@@ -103,7 +103,7 @@ export default function AnimalForm() {
     nav('/herd')
   }
 
-  if (!loaded) return <p className="text-slate-500">Loading…</p>
+  if (!loaded) return <p className="text-taupe-600">Loading…</p>
 
   const isCalf = form.type === 'calf'
 
@@ -113,7 +113,7 @@ export default function AnimalForm() {
         <Link to={id ? `/herd/${id}` : '/herd'} className="btn-ghost px-2 py-2">
           <BackIcon className="h-5 w-5" />
         </Link>
-        <h1 className="text-xl font-bold text-slate-900">{editing ? 'Edit animal' : 'Add animal'}</h1>
+        <h1 className="text-xl font-bold text-ink-900">{editing ? 'Edit animal' : 'Add animal'}</h1>
       </div>
 
       <form onSubmit={onSubmit} className="mt-4 space-y-4">
