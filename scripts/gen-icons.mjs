@@ -1,46 +1,49 @@
-// One-off: rasterize the brand SVG into the PNG app icons the PWA manifest needs.
+// One-off: rasterize the brand mark into the PNG app icons the PWA needs.
 // Run with: node scripts/gen-icons.mjs
 import sharp from 'sharp'
-import { mkdirSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 
 mkdirSync('public/icons', { recursive: true })
 
-// Plain icon (used for 192/512 and apple-touch): rounded cobalt tile + ear tag.
-const icon = (size, pad = 0) => `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="${size}" height="${size}">
-  <rect width="100" height="100" rx="20" fill="#1e35d4"/>
-  <g transform="translate(${pad},${pad}) scale(${(100 - pad * 2) / 100})">
-    <path d="M50 16c7 0 9 5 9 9v2c12 2 21 11 21 27 0 19-14 30-30 30S20 73 20 54c0-16 9-25 21-27v-2c0-4 2-9 9-9Z" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
-    <circle cx="50" cy="23" r="4" fill="none" stroke="#0f172a" stroke-width="3.5"/>
-    <g stroke="#1e35d4" stroke-width="4.5" stroke-linecap="round">
-      <path d="M32 50h36"/><path d="M36 44l-3-4M50 42v-5M64 44l3-4"/>
-    </g>
-    <path d="M37 72V58c0-4.5 7-4.5 7 0v5c0-5.5 12-5.5 12 0v-5c0-4.5 7-4.5 7 0v14" fill="none" stroke="#1e35d4" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+const C = '#1e35d4'
+
+// The brand mark paths (kept in sync with src/components/Brand.tsx).
+const mark = `
+  <g stroke="${C}" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M16 50 Q50 25 84 50" stroke-width="8.5"/>
+    <path d="M50 30 L50 16" stroke-width="7.5"/>
+    <path d="M39 32 L34 19" stroke-width="7.5"/>
+    <path d="M61 32 L66 19" stroke-width="7.5"/>
+    <path d="M28 40 L20 29" stroke-width="7.5"/>
+    <path d="M72 40 L80 29" stroke-width="7.5"/>
+    <path d="M30 91 L30 66 C30 56 45 56 45 66 L45 74 C45 58 63 56 63 72 L63 91" stroke-width="9"/>
+  </g>`
+
+// App icon: cobalt brand on a white tile (matches the header badge).
+const icon = (rounded) => `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="${rounded}" fill="#ffffff"/>
+  <g transform="translate(10,10) scale(0.8)">${mark}</g>
 </svg>`
 
-// Maskable icon: same art but with safe-zone padding so launchers can crop it.
+// Maskable: white full-bleed, brand centered inside the safe zone.
 const maskable = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
-  <rect width="100" height="100" fill="#1e35d4"/>
-  <g transform="translate(18,18) scale(0.64)">
-    <path d="M50 16c7 0 9 5 9 9v2c12 2 21 11 21 27 0 19-14 30-30 30S20 73 20 54c0-16 9-25 21-27v-2c0-4 2-9 9-9Z" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
-    <circle cx="50" cy="23" r="4" fill="none" stroke="#0f172a" stroke-width="3.5"/>
-    <g stroke="#1e35d4" stroke-width="4.5" stroke-linecap="round">
-      <path d="M32 50h36"/><path d="M36 44l-3-4M50 42v-5M64 44l3-4"/>
-    </g>
-    <path d="M37 72V58c0-4.5 7-4.5 7 0v5c0-5.5 12-5.5 12 0v-5c0-4.5 7-4.5 7 0v14" fill="none" stroke="#1e35d4" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#ffffff"/>
+  <g transform="translate(22,22) scale(0.56)">${mark}</g>
 </svg>`
 
 const jobs = [
-  ['public/icons/icon-192.png', icon(192), 192],
-  ['public/icons/icon-512.png', icon(512), 512],
-  ['public/icons/apple-touch-icon.png', icon(180), 180],
+  ['public/icons/icon-192.png', icon(18), 192],
+  ['public/icons/icon-512.png', icon(48), 512],
+  ['public/icons/apple-touch-icon.png', icon(0), 180],
   ['public/icons/icon-512-maskable.png', maskable, 512],
 ]
-
 for (const [out, svg, size] of jobs) {
   await sharp(Buffer.from(svg)).resize(size, size).png().toFile(out)
   console.log('wrote', out)
 }
+
+// Favicon (SVG, crisp): brand on white rounded tile.
+writeFileSync('public/favicon.svg', icon(18).trim() + '\n')
+console.log('wrote public/favicon.svg')
