@@ -4,8 +4,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Sand Creek Cattle brand cobalt — used as an ACCENT only (actions,
-        // active states, the cow ear-tag). The app's base is neutral cream/ink.
+        // Palette: cobalt + ink-blue (navy) + charcoal + tan/cognac + light gray
+        // + winter white. Cobalt is the single accent; navy/charcoal are the
+        // darks; cool grays and winter-white are the base surfaces.
+
+        // Brand cobalt — the one accent (actions, active states, the ear tag).
         cobalt: {
           50: '#eef1fe',
           100: '#dfe4fd',
@@ -13,35 +16,42 @@ export default {
           300: '#9aabf7',
           400: '#6f83f1',
           500: '#4a5ce8',
-          600: '#1e35d4', // primary accent
+          600: '#1e35d4',
           700: '#1a2cb0',
           800: '#18268c',
           900: '#182573',
         },
-        // Neutral cream surfaces — the dominant palette.
-        sand: {
-          50: '#f8f6f1',
-          100: '#f1ede3',
-          200: '#e4ddcd',
-          300: '#d3c8b1',
+        // Ink blue (navy) — header, hero bands, deep accents.
+        navy: {
+          600: '#003b8e',
+          700: '#04295c',
+          800: '#021d43',
+          900: '#001b3a',
         },
-        // Warm charcoal for the header and primary text (neutral, not black).
+        // Cool charcoal — headings & primary text.
         ink: {
-          700: '#33383f',
-          800: '#25292f',
-          900: '#181b20',
+          700: '#3a4049',
+          800: '#2a2f38',
+          900: '#20242c',
         },
-        // Muted warm-gray for secondary accents/dividers.
+        // Winter-white / light-gray base surfaces.
+        sand: {
+          50: '#eef1f5',
+          100: '#e5e9f0',
+          200: '#d5dce6',
+          300: '#bcc6d4',
+        },
+        // Cool blue-gray secondary (labels, dividers, muted text).
         taupe: {
-          100: '#eceae4',
-          200: '#dcd8cf',
-          400: '#a89f8f',
-          600: '#726a5c',
+          100: '#e7eaf0',
+          200: '#d3d9e2',
+          400: '#8d99ae',
+          600: '#59616e',
         },
-        // Kept for rare warm touches; used sparingly now.
+        // Tan / cognac — warm accent, used sparingly.
         leather: {
-          400: '#c08457',
-          600: '#9a5a30',
+          400: '#c99a67',
+          600: '#9c6a3c',
         },
       },
       fontFamily: {

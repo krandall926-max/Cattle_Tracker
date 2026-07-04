@@ -22,7 +22,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const online = useOnlineStatus()
   return (
     <div className="mx-auto flex min-h-full max-w-2xl flex-col">
-      <header className="sticky top-0 z-10 flex items-center gap-3 bg-ink-900 px-4 py-3 text-white shadow-sm">
+      <header className="sticky top-0 z-10 flex items-center gap-3 bg-navy-900 px-4 py-3 text-white shadow-sm">
         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white ring-1 ring-black/10">
           <BrandMark className="h-9 w-9" />
         </div>
