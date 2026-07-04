@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - claude/cattle-management-offline-app-ki5m5r
   workflow_dispatch:
 
 # One-time setup in the repo: Settings → Pages → Build and deployment →
