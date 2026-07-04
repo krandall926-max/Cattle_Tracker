@@ -52,6 +52,13 @@ The built `dist/` is static — deploy it to any static host (Netlify, Vercel,
 GitHub Pages, Cloudflare Pages). `base: './'` in `vite.config.ts` means it works
 from any path.
 
+### Live link via GitHub Pages (no extra account)
+
+A workflow at `.github/workflows/deploy.yml` builds and publishes the app.
+**One-time setup:** in the repo, go to **Settings → Pages → Build and deployment
+→ Source** and choose **GitHub Actions**. After that, every push builds and
+publishes automatically to `https://<owner>.github.io/Cattle_Tracker/`.
+
 Regenerate app icons after changing the brand mark:
 
 ```bash

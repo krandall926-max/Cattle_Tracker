@@ -1,16 +1,15 @@
 import type { AnimalType } from '../types'
 
 // The animal identifier: a single-color livestock ear tag (one shape, one color)
-// with the tag number shown large — modeled on a real cattle button/panel tag
-// and the shape in the Sand Creek brand mark. No animal photos as identifiers;
-// a photo can live inside a record instead.
+// with the tag number shown large — a classic cattle "maxi tag" silhouette
+// (domed keyhole top, angled shoulders, squared rounded body). No animal photos
+// as identifiers; a photo can live inside a record instead.
 //
-// `type` is accepted for call-site compatibility but no longer changes color —
-// the ranch uses a single tag color.
+// `type` is accepted for call-site compatibility but does not change the tag —
+// the ranch uses a single tag color/shape.
 
-const TAG = '#1e35d4' // cobalt (brand)
+const TAG = '#9c5a34' // cognac
 const NUM = '#ffffff'
-const HOLE = '#9aabf7'
 
 type Size = 'sm' | 'md' | 'lg'
 const WIDTHS: Record<Size, number> = { sm: 46, md: 58, lg: 78 }
@@ -22,6 +21,15 @@ function fontSize(len: number): number {
   if (len === 4) return 25
   return 20
 }
+
+// Outer silhouette + a punched hole (evenodd) so the hole shows the background,
+// giving the ring look of a real tag.
+const TAG_PATH =
+  // body + shoulders + domed top
+  'M37 39 A15 22 0 1 1 63 39 L85 58 Q91 63 91 71 L91 96 Q91 108 79 108 ' +
+  'L21 108 Q9 108 9 96 L9 71 Q9 63 15 58 Z ' +
+  // punch hole
+  'M42.5 26 a7.5 7.5 0 1 0 15 0 a7.5 7.5 0 1 0 -15 0 Z'
 
 export function EarTag({
   tag,
@@ -42,19 +50,10 @@ export function EarTag({
       role="img"
       aria-label={`Tag ${tag}`}
     >
-      {/* Top tab */}
-      <path d="M40 12 Q40 7 46 7 L54 7 Q60 7 60 12 L60 30 L40 30 Z" fill={TAG} />
-      {/* Punch hole */}
-      <circle cx="50" cy="16" r="3.4" fill={HOLE} />
-      {/* Tag body — rounded cattle-tag silhouette, slightly tapered to a soft point */}
-      <path
-        d="M18 40 Q18 27 32 26 L68 26 Q82 27 82 40 L82 74
-           Q82 90 66 99 Q54 106 50 107 Q46 106 34 99 Q18 90 18 74 Z"
-        fill={TAG}
-      />
+      <path d={TAG_PATH} fill={TAG} fillRule="evenodd" />
       <text
         x="50"
-        y="65"
+        y="77"
         textAnchor="middle"
         dominantBaseline="central"
         fill={NUM}
